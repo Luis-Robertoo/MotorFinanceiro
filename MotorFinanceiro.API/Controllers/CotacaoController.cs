@@ -11,10 +11,12 @@ namespace MotorFinanceiro.API.Controllers
     public class CotacaoController : ControllerBase
     {
         private readonly ICotacaoService _cotacaoService;
+        private readonly IConfiguration _configuration;
 
-        public CotacaoController()
+        public CotacaoController(IConfiguration configuration)
         {
-            _cotacaoService = new CotacaoService();
+            _configuration = configuration;
+            _cotacaoService = new CotacaoService(_configuration);
         }
 
 
