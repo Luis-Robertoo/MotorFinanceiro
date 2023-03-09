@@ -6,6 +6,12 @@ namespace MotorFinanceiro.API.Service
 {
     public class CotacaoService : ICotacaoService
     {
+        private readonly IConfiguration _configuration;
+        public CotacaoService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public async Task<List<Valor>> ObtemCotacao(string moeda, string data = "atual") 
         {
             if (moeda.Length != 3 || moeda.Any(char.IsNumber))
@@ -15,7 +21,9 @@ namespace MotorFinanceiro.API.Service
 
             data = data == "atual" ? DateTime.Now.ToString("MM-dd-yyyy") : data;
 
-            var url = $"https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaAberturaOuIntermediario(codigoMoeda=@codigoMoeda,dataCotacao=@dataCotacao)?@codigoMoeda='{moeda.ToUpper()}'&@dataCotacao='{data}'&$format=json";
+            var urlBase = _configuration.GetValue<string>("Urls:urlCotacao");
+
+            var url = $"{urlBase}@codigoMoeda='{moeda.ToUpper()}'&@dataCotacao='{data}'&$format=json";
 
             var response = await cliente.GetAsync(url);
 
