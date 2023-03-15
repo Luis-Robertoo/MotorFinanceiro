@@ -3,7 +3,7 @@
 namespace MotorFinanceiro.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class FluxoMonetarioController : ControllerBase
     {
         [HttpGet(Name = "GetTest")]

@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace MotorFinanceiro.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CotacaoController : ControllerBase
     {
         private readonly ICotacaoService _cotacaoService;

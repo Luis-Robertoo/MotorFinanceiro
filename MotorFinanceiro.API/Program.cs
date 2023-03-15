@@ -16,8 +16,12 @@ var app = builder.Build();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+Console.WriteLine(app.Environment.ToString());
 
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthorization();
 
 app.MapControllers();
