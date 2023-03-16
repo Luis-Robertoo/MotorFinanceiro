@@ -1,4 +1,6 @@
-﻿using MotorFinanceiro.API.Interfaces;
+﻿
+
+using MotorFinanceiro.API.Interfaces;
 using MotorFinanceiro.API.Models;
 using System.Text.Json;
 

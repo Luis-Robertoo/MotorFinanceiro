@@ -16,8 +16,8 @@ namespace MotorFinanceiro.API.Service
         public async Task<List<string>> CalculaJurosSelic(string valorInicialString = "0", string valorMensalString = "0", int meses = 0)
         {
 
-            double valorInicial = Convert.ToDouble(valorInicialString);
-            double valorMensal = Convert.ToDouble(valorMensalString); 
+            decimal valorInicial = Convert.ToDecimal(valorInicialString);
+            decimal valorMensal = Convert.ToDecimal(valorMensalString); 
 
             if (valorInicial == 0 && valorMensal == 0)
                 return null;
@@ -28,10 +28,10 @@ namespace MotorFinanceiro.API.Service
                 return null;
 
 
-            double aporteAcumulado = 0;
-            double taxaJurosMensal = selic / 12;
-            double porc = taxaJurosMensal / 100;
-            double totalSemJuros = (meses * valorMensal) + valorInicial;
+            decimal aporteAcumulado = 0;
+            decimal taxaJurosMensal = selic / 12;
+            decimal porc = taxaJurosMensal / 100;
+            decimal totalSemJuros = (meses * valorMensal) + valorInicial;
 
             List<string> resultado = new List<string>();
             
@@ -39,7 +39,7 @@ namespace MotorFinanceiro.API.Service
             {
                 //taxa / 100 = porcetagem // 2 / 100 = 0,02
                 //porcetagem x numero = rendimento // 0,02 * 1000 = 20
-                double rendiMensal = porc * valorInicial;
+                decimal rendiMensal = porc * valorInicial;
 
                 if (i == 1)
                     aporteAcumulado = (porc * valorInicial) + valorInicial + valorMensal;
@@ -66,7 +66,7 @@ namespace MotorFinanceiro.API.Service
             return resultado;
         }
 
-        private async Task<double> PegaSelic()
+        private async Task<decimal> PegaSelic()
         {
             var urlSelic = _configuration.GetValue<string>("Urls:urlSelic");
             
@@ -84,10 +84,20 @@ namespace MotorFinanceiro.API.Service
             return 0;
         }
 
-        private static double ConverteJsonToDouble(string json)
+        private static decimal ConverteJsonToDouble(string json)
         {
             var dados = JsonSerializer.Deserialize<List<SelicResponse>>(json);
-            return Convert.ToDouble(dados.FirstOrDefault().valor.Replace(".", ","));
+
+            Console.WriteLine(json);
+
+            Console.WriteLine(dados.FirstOrDefault().valor);
+            Console.WriteLine(dados.FirstOrDefault().valor.Replace(".", ","));
+
+            Console.WriteLine(Convert.ToDecimal(dados.FirstOrDefault().valor));
+            Console.WriteLine(Convert.ToDecimal(dados.FirstOrDefault().valor.Replace(".", ",")));
+            
+
+            return Convert.ToDecimal(dados.FirstOrDefault().valor.Replace(".", ","));
         }
     }
 }
