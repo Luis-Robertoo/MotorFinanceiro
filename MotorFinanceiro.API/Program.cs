@@ -37,6 +37,7 @@ SupportedUICultures = new List<CultureInfo>
 
 Console.WriteLine(app.Environment.ToString());
 
+
 if (app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
