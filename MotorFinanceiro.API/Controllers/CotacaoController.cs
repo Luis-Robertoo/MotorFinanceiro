@@ -21,7 +21,7 @@ namespace MotorFinanceiro.API.Controllers
 
 
         [HttpGet(Name = "Cotacao")]
-        public async Task<ActionResult> GetCotacao([FromQuery] string moeda, [FromQuery] string data =  "atual")
+        public async Task<ActionResult> GetCotacao([FromQuery] string moeda, [FromQuery] string? data)
         {
 
             var dados = await _cotacaoService.ObtemCotacao(moeda, data);

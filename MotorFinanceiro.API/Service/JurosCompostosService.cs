@@ -16,8 +16,8 @@ namespace MotorFinanceiro.API.Service
         public async Task<List<string>> CalculaJurosSelic(string valorInicialString = "0", string valorMensalString = "0", int meses = 0)
         {
 
-            decimal valorInicial = Convert.ToDecimal(valorInicialString);
-            decimal valorMensal = Convert.ToDecimal(valorMensalString); 
+            var valorInicial = Convert.ToDecimal(valorInicialString);
+            var valorMensal = Convert.ToDecimal(valorMensalString); 
 
             if (valorInicial == 0 && valorMensal == 0)
                 return null;
@@ -28,10 +28,11 @@ namespace MotorFinanceiro.API.Service
                 return null;
 
 
-            decimal aporteAcumulado = 0;
-            decimal taxaJurosMensal = selic / 12;
-            decimal porc = taxaJurosMensal / 100;
-            decimal totalSemJuros = (meses * valorMensal) + valorInicial;
+            var aporteAcumulado = decimal.Zero;
+            var taxaJurosMensal = selic / 12;
+            var porc = taxaJurosMensal / 100;
+            var totalSemJuros = (meses * valorMensal) + valorInicial;
+            var imposto = 22m / 100m;
 
             List<string> resultado = new List<string>();
             
@@ -49,19 +50,26 @@ namespace MotorFinanceiro.API.Service
                     aporteAcumulado = aporteAcumulado + valorMensal + rendiMensal;
                 }
 
-                resultado.Add($"Mês - {i:D3} || Rendimento: {rendiMensal:0000.00} || Valor Acumulado: {aporteAcumulado:00000.00}");
+                resultado.Add($"Mês - {i:D3} || Rend. Bruto: {rendiMensal:0000.00} || Rend. Liquido: {rendiMensal - (imposto * rendiMensal):0000.00} || Valor Acumulado: {aporteAcumulado:00000.00}");
             }
+
+            var totalBruto = aporteAcumulado - totalSemJuros;
+            var totalLiquido = totalBruto - imposto * totalBruto;
 
             resultado.Add($"-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-=-=");
             resultado.Add($"Taxa Selic: {selic}% ao ano || Taxa Selic: {taxaJurosMensal}% ao mês ");
             resultado.Add($"-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-=-=");
             resultado.Add($"Total que saiu do seu bolso: {totalSemJuros}");
             resultado.Add($"-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-=-=");
-            resultado.Add($"Total acumulado: {aporteAcumulado:00000.00}");
+            resultado.Add($"Total BRUTO acumulado: {aporteAcumulado:00000.00}");
+            resultado.Add($"-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-=-=");
+            resultado.Add($"Total Liquido acumulado: {totalSemJuros + totalLiquido:00000.00}");
             resultado.Add($"-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-=-=");
             resultado.Add($"Sendo {meses} de {valorMensal} mais 1 de {valorInicial}");
             resultado.Add($"-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-=-=");
-            resultado.Add($"Total que você ganhou sem fazer nada: {aporteAcumulado - totalSemJuros:.00}");
+            resultado.Add($"Total que você ganhou sem fazer nada BRUTO: {aporteAcumulado - totalSemJuros:.00}");
+            resultado.Add($"-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-=-=");
+            resultado.Add($"Total que você ganhou sem fazer nada LIQUIDO: {totalLiquido:.00}");
 
             return resultado;
         }
@@ -81,22 +89,13 @@ namespace MotorFinanceiro.API.Service
             if (response.IsSuccessStatusCode && json.Contains("valor"))
                 return ConverteJsonToDouble(json);
 
-            return 0;
+            return decimal.Zero;
         }
 
         private static decimal ConverteJsonToDouble(string json)
         {
             var dados = JsonSerializer.Deserialize<List<SelicResponse>>(json);
-
-            Console.WriteLine(json);
-
-            Console.WriteLine(dados.FirstOrDefault().valor);
-            Console.WriteLine(dados.FirstOrDefault().valor.Replace(".", ","));
-
-            Console.WriteLine(Convert.ToDecimal(dados.FirstOrDefault().valor));
-            Console.WriteLine(Convert.ToDecimal(dados.FirstOrDefault().valor.Replace(".", ",")));
             
-
             return Convert.ToDecimal(dados.FirstOrDefault().valor.Replace(".", ","));
         }
     }

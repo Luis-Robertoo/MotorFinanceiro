@@ -14,14 +14,16 @@ namespace MotorFinanceiro.API.Service
             _configuration = configuration;
         }
 
-        public async Task<List<Valor>> ObtemCotacao(string moeda, string data = "atual") 
+        public async Task<List<Valor>> ObtemCotacao(string moeda, string data) 
         {
             if (moeda.Length != 3 || moeda.Any(char.IsNumber))
                 return null;
 
             var cliente = new HttpClient();
 
-            data = data == "atual" ? DateTime.Now.ToString("MM-dd-yyyy") : data;
+            if (data is null)
+                data = DateTime.Now.ToString("MM-dd-yyyy");
+
 
             var urlBase = _configuration.GetValue<string>("Urls:urlCotacao");
 
