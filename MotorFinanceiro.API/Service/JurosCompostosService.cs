@@ -17,10 +17,10 @@ namespace MotorFinanceiro.API.Service
         {
 
             var valorInicial = Convert.ToDecimal(valorInicialString);
-            var valorMensal = Convert.ToDecimal(valorMensalString); 
+            var valorMensal = Convert.ToDecimal(valorMensalString);
 
             if (valorInicial == 0 && valorMensal == 0)
-                return null;
+                throw new Exception("Necessario valor maior que 0 no aporte inicial ou aporte mensal.");
 
             var selic = await PegaSelic();
 
@@ -35,7 +35,7 @@ namespace MotorFinanceiro.API.Service
             var imposto = 22m / 100m;
 
             List<string> resultado = new List<string>();
-            
+
             for (int i = 1; i <= meses; i++)
             {
                 //taxa / 100 = porcetagem // 2 / 100 = 0,02
@@ -77,7 +77,7 @@ namespace MotorFinanceiro.API.Service
         private async Task<decimal> PegaSelic()
         {
             var urlSelic = _configuration.GetValue<string>("Urls:urlSelic");
-            
+
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Host", "api.bcb.gov.br");
             client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.31.1");
@@ -95,7 +95,7 @@ namespace MotorFinanceiro.API.Service
         private static decimal ConverteJsonToDouble(string json)
         {
             var dados = JsonSerializer.Deserialize<List<SelicResponse>>(json);
-            
+
             return Convert.ToDecimal(dados.FirstOrDefault().valor.Replace(".", ","));
         }
     }

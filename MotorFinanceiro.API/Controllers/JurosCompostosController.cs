@@ -22,10 +22,8 @@ namespace MotorFinanceiro.API.Controllers
         {
             var dados = await _jurosServices.CalculaJurosSelic(aporteInicial, aporteMensal, meses);
 
-            if (dados is not null)
-                return Ok(dados);
-            
-            return BadRequest("Necessario valor maior que 0 no aporte inicial ou aporte mensal");
+            return Ok(dados);
+
         }
     }
 }
